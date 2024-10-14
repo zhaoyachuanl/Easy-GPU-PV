@@ -1,0 +1,1 @@
+Invoke-PS2EXE -inputFile .\gpupv_tool.ps1 -outputFile .\gpupv_tool.exe -UNICODEEncoding -requireAdmin -DPIAware -description  "by zhaoyachuan@gmail.com"

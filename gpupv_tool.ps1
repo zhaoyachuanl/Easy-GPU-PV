@@ -34,6 +34,14 @@ function Select_Item {
     param (
         [System.Object]$list
     )
+
+    if ($list -is [char] -or $list -is [string]) {
+        $list = , $list  # 将 $a 放进数组
+    }
+    else {
+        $list = $list 
+    }
+
     # 提示用户输入索引
     Write-Host "avaliable items:"
     # 显示索引和虚拟机名称
@@ -53,28 +61,35 @@ function Select_Item {
     Return $selected_item
 }
 
-function Tolist {
-    param (
-        [System.Object]$input_str
-    )
-    if ($input_str -is [char] -or $input_str -is [string]) {
-        $array = @(@($input_str))  # 将 $a 放进数组
-    } else {
-        $array = $input_str 
-    }
-    Return $array
-}
+# function Tolist {
+#     param (
+#         [System.string]$input_str
+#     )
+#     if ($input_str -is [char] -or $input_str -is [string]) {
+#         $array = , $input_str  # 将 $a 放进数组
+#     }
+#     else {
+#         $array = $input_str 
+
+#     }
+#     $tmp = $array[0]
+#     Write-Host "$tmp"
+#     Return $array
+# }
 
 function Get-SeletedVMName {
     # vm_list = Get-VM | Select-Object -ExpandProperty Name
+    # $vm_list = Get-VM
+    # $vm_name_list =Tolist -input_str $vm_list.name
+    # Return Select_Item -list $vm_name_list
     $vm_list = Get-VM
-    $vm_name_list =Tolist -input_str $vm_list.name
+    $vm_name_list = $vm_list.name
     Return Select_Item -list $vm_name_list
 }
 
 function Get-SelectedGpuName {
     $gpu_list = Get-VMGpuPartitionAdapterFriendlyName
-    $gpu_list =Tolist -input_str $gpu_list
+    # $gpu_list =Tolist -input_str $gpu_list
     return Select_Item -list $gpu_list
 }
 
@@ -85,20 +100,6 @@ function precheck() {
     Pause
 }
 
-# function Add_vGpu {
-#     $vm = Get-SeletedVMName
-#     forceshutdown_vm -vmname $vm
-#     $vmem = Read-Host -Prompt "input vgpu ram size (if 8G as 8)"
-#     $vmem = ($vmem / 1) * 1GB
-
-#     Add-VMGpuPartitionAdapter -VMName $vm
-#     Set-VMGpuPartitionAdapter -VMName $vm
-#     Set-VM -GuestControlledCacheTypes $true -VMName $vm
-#     Set-VM -LowMemoryMappedIoSpace 256MB -VMName $vm
-#     Set-VM -HighMemoryMappedIoSpace "$vmem" -VMName $vm
-#     Write-Host "done"
-#     Pause
-# }
 
 function Config_vgpu() {
     $vm = Get-SeletedVMName
